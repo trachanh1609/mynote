@@ -1,0 +1,11 @@
+Python VirtualEnv
+
+Installation
+- pip install virtualenv
+- go to the directory , say "Chat-App"
+- Chat-AppApp $ virtualenv venv     : create a virtualenv named "venv" :Chat-AppApp $ virtualenv venv
+- Chat-AppApp $ source venv/bin/activate   : to activate the env
+- (venv)Chat-App$ pip install Django==1.7   : Virtual Env is UP. Intalling anything here is seperated
+- (venv)Chat-App$ pip freeze    : Check the version
+- (venv)Chat-App$ django-admin bla bla  : to install a django project
+- (venv)Chat-App$ deactivate   : to Deactivate or by closing terminal window

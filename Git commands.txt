@@ -1,0 +1,555 @@
+
+***********************A New Repo from existing folder**************************************
+git init
+create .ignore file
+git add
+git commit
+-> local repo ready, next is to connect to remote repo
+create a repo in github.com
+
+$ git remote add origin git@github.com:username/new_repo       // ssh or
+$ git remote add origin https://github.com/username/new_repo   // https
+$ git push -u origin master
+
+
+
+***********************              End             **********************************************
+
+
+$ git branch --all
+* master
+  remotes/origin/master
+  remotes/vu-origin/master
+
+
+$ git remote show vu-origin
+* remote vu-origin
+  Fetch URL: https://github.com/trachanh1609/gamelist.git
+  Push  URL: https://github.com/trachanh1609/gamelist.git
+  HEAD branch: master
+  Remote branch:
+    master tracked
+  Local ref configured for 'git push':
+    master pushes to master (up to date)
+
+
+git remote add upstream  <THEIR_REMOTE_URL>
+git push  <REMOTENAME> :<BRANCHNAME>
+
+
+$ git branch -vv
+* master c661b47 [origin/master] Procfile added
+
+
+vagrant@vagrant-ubuntu-trusty-64:~/gamelist_clone$ git status
+On branch master
+Your branch is ahead of 'origin/master' by 4 commits.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working directory clean
+vagrant@vagrant-ubuntu-trusty-64:~/gamelist_clone$
+vagrant@vagrant-ubuntu-trusty-64:~/gamelist_clone$
+vagrant@vagrant-ubuntu-trusty-64:~/gamelist_clone$ git push origin master
+Counting objects: 9, done.
+Compressing objects: 100% (7/7), done.
+Writing objects: 100% (8/8), 906 bytes | 0 bytes/s, done.
+Total 8 (delta 3), reused 0 (delta 0)
+To /home/vagrant/gamelist
+   b7329a7..c661b47  master -> master
+vagrant@vagrant-ubuntu-trusty-64:~/gamelist_clone$ git status
+On branch master
+Your branch is up-to-date with 'origin/master'.
+
+nothing to commit, working directory clean
+
+
+
+git remote update will update all of your branches set to track remote ones, but not merge any changes in.
+
+git fetch will update only the branch you're on, but not merge any changes in.
+
+git pull will update and merge any remote changes of the current branch you're on. This would be the one you use to update a local branch.
+
+
+
+GIT REAL codeschool
+
+git commit -m "something" is done. Now I want to go back to stage, run git reset
+$git reset --soft HEAD^
+$git status
+
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	new file:   cats.html
+#	modified:   index.html
+
+- Now I want to undo ( checkout all files in 1 command). RUn
+$git checkout -- cats.html index.html
+
+- Add and commit All in one command
+$ git commit -a -m "add index"
+
+-You'll need to remove the most recent commit, and all its changes.
+$git reset --hard HEAD^   ( reset 1 commit )
+$git reset --hard HEAD^^   ( reset 2 commits )
+
+$git log --pretty=oneline
+$git reset --hard 43c117e   ( reset to this SHA)
+
+- Merging
+$git branch
+grooming
+*master
+$ git merge grooming
+
+- Create a new branch and checkout that branch
+$git checkout -b new_branch
+
+- If there is conflict: fix the conflict, git add, git commit , git push
+
+- Creating a remote branch
+$git checkout -b new_branch
+$git push origin new_branch  ( link the local new_branch to origin new_branch)
+then work on the branch, git add, git commit, then
+$git push
+To https://.....git  ( origin)
+5ab4d3..  new_branch --> new_branch
+
+- See all remote branch
+$git branch -r
+origin/master
+origin/new_branch
+
+$git remote show origin
+
+- Delete branches
+$git push origin :new_branch   ( Delete remote branch)
+$git branch -d new_branch   ( delete local branch)
+error if there is some changes still in new_branch
+$git branch -D new_branch  ( delete local branch and all changes)
+
+
+- Update deleted branches
+$git remote show origin
+new_branch  stale ( use git remote prune to remove)
+$git remote prune origin   ( to clean up deleted remote branches)
+
+- Push local branch_a to remote branch_b
+$git push origin branch_a:branch_b    . For ex:
+$git push origin staging:master
+
+---- Taging
+- list all tags
+$git tag
+v0.0.1
+v0.0.2
+$git checkout v0.0.11
+
+- Add a new tag
+$git tag -a v0.0.3 -m "version 0.0.3"
+
+- Push the tag
+$git push --tags
+
+
+--- Rebase
+- instead of running $git pull, run
+$git fetch     fetch all remote timeline
+$git rebase master  , if current branch is master then $git rebase
+1st move all changes in master ( which are not in origin/master) to a temporary place
+2nd run all origin/master commits
+3rd run all commits in the temporary are, one at a time
+
+Example:
+$git checkout admin
+$git rebase master
+$git checkout master
+$git merge admin
+
+( $git pull = $git fetch , then $git merge origin/master)
+
+- after fetch, if git rebase get conflict
+fix the conflict, then
+$git add file.txt   ( mark as resolved)
+$git rebase --continue ( rebase runs all commits in temp one at a time)
+or
+$git rebase --skip
+or
+$git rebase --abort
+
+- colorize output
+$git config --global color.ui true
+$git log
+
+- One line Commit hash - Commit message
+$git log --pretty=oneline
+
+- Output format
+$git log --pretty=format:"%h %ad- %s [%an] "
+%h : hash , %ad : author date, %an : author name, %s : subject , %d :reference name
+
+- see 1 file diff
+$git log --oneline -p     ( p for patch)
+
+- How many line added, deleted in each commit
+$git log --oneline --stat
+
+- See graph
+$git log --oneline --graph
+
+- Log Date ranges
+$git log --until=1.minute.ago
+$git log --since=1.day.ago
+$git log --since=1.month.ago  --until=2.weeks.ago
+$git log --since=2017-01-01  --until=2017-10-21
+
+$git log --oneline
+$git log -p   ( display diff along with log)
+
+- DIFF
+$git diff
+$git diff HEAD^
+$git diff HEAD^^
+$git diff HEAD~5  ( 5 commits ago)
+$git diff HEAD^..HEAD  ( second most recent vs most)
+$git diff f9037bcf9037bc..f9037bcf9037bc  ( last 7digit or all hash number)
+
+$git diff master bird  ( diff between 2 branches)
+$git diff --since=1.month.ago  --until=2.weeks.ago
+
+- Blame
+$git blame index.html --date short
+
+
+- Excluding files
+create file name  .git/info/exclude   and content is
+folder_name/
+file_name.mp4
+*.txt
+logs/*.log
+check with git status
+
+- Removing files
+$git rm README.txt
+$git status
+$git commit -m "remove readme"
+
+- Already tracking a file, now Stop watching for changes
+$git rm --cached file_name.txt
+$git status  will show file deleted, but file is not deleted in file system
+after that put this file in gitignore and it will not be tracked
+$git add .gitignore
+$git commit -m "ignore all .txt files"
+
+
+- Config
+$git config --list
+
+
+- Local config
+$git config user.email abcd@gmail.com    ( set email for current repo)
+$git config user.email     ( show email for current repo)
+
+
+- Aliases
+$git config --global alias.mylog  \
+"log --pretty=format:'%h %s [%an]' --graph "
+$git mylog
+
+$git config --global alias.lol \
+"log --graph --decorate --pretty=oneline --abbrev-commit --all"
+
+$git config --global alias.st status     ( git st  <---> git status)
+$git config --global alias.cd checkout     ( git co  <---> git checkout)
+$git config --global alias.br branch     ( git br  <---> git branch)
+$git config --global alias.ci commit     ( git ci  <---> git commit)
+
+--- End of Git Real 1 ----
+
+---- Start of Git Real 2 ----
+
+** Git rebase Recap
+- What if we need to alter commits in the same branch ?
+$git rebase -i HEAD~3  ( i = interactive mode )
+an editor shows up
+if we dont change anything and save and execute, nothing changes
+
+- Reorder commits ( 2nd last <--> 3rd last)
+$git rebase -i HEAD~3
+( in editor there will be something like below)
+pick 403u45 oldest 1
+pick 420543 oldest 2
+pick 230858 newest
+( then use editor to reorder commits and change to )
+pick 420543 oldest 2
+pick 403u45 oldest 1
+pick 230858 newest
+( then save and execute)
+(check again)
+$git log --oneline
+
+- Change the commit Message
+$git rebase -i HEAD~4
+( instead of 'pick', use 'reword' , for ex )
+pick 403u45 oldest 1
+pick 420543 oldest 2
+reword 230858 newest
+( save and exit, there will be another editor coming, this is where we put the new message)
+
+$git push --force branch_name   ( to force push to remote)
+
+- Change the most recent commit Message
+$git commit --amend
+(edit the commit message in vim editor and save)
+
+- Split 1 commit into multiple commits
+$git rebase -i HEAD~3
+(instead of 'pick', use 'edit')
+( 'edit' will replays and stop at that commit)
+( in order to split, first we need to undo the changes that we just replayed)
+$git reset HEAD^    ( this will unstage the changes)
+Unstage changes after reset:
+M   capybara.html
+M   index.html
+( then commit one by one)
+$git add capybara.html
+$git commit -m "Something with capybara"
+$git add index.html
+$git commit -m "change index"
+( then we can continue the rebase)
+$git rebase --continue
+
+- Combine (squash) 2 commits into 1
+$git rebase -i HEAD~3
+( instead of 'pick', use 'squash')
+pick 403u45 oldest 1
+pick 420543 oldest 2
+squash 230858 newest
+( save, exit, and another editor appear, give the new commit message)
+
+** Stashing
+If you are in the middle of the way, not ready for a full commit
+And you want to store the changes somewhere, use Stash
+$git stash save   ( take the files and store in temp area)
+( it also restores from the last commit. So git status will show no changes)
+(Then switch to other branch and work on them)
+$git checkout another_branch
+$git pull
+(when done with the another_branch, get back to where we left off)
+$git checkout notdone_branch
+$git stash apply
+$git diff    ( just to check)
+
+- Every time we run 'git stash save', git will push the stash to a stash Stack
+$git stash list    ( this will show the stack list ( WIP: Work in progress))
+stash@{0}: WIP on master: 436b93d Add sthing
+stash@{1}: WIP on gerbils: 836b93d Add sthing 1
+stash@{2}: WIP on gerbils: 9096b93d Add sthing 2
+
+$git stash apply stash@{1}
+
+(by default, stash@{0} will be apply if we run 'git stash apply')
+(but it wont pop the last stash in the stack)
+
+- Pop out the last stash in the stack
+$git stash drop
+$git stash list
+
+- Shortcut
+$git stash  == $git stash save
+$git stash apply == $git stash apply stash@{0}
+$git stash drop == $git stash drop stash@{0}
+$git stash pop == $git stash apply , $git stash drop
+$git stash show == $git stash show stash@{0}
+$git stash clear == drop all stashes
+
+- 'keep-index' causes the staging area not to be stashed
+gerbils.html  is in staging area
+index.html is not staged
+$git stash save --keep-index   ( only unstaged files will be stashed)
+( index.html is stashed, gerbils is still in staging)
+$git status
+$git commit -m "add gerbils"
+( now we can pop the stash and continue)
+$git stash pop
+( index.html will be applied changes)
+
+
+- What if the files we want to stash are Untracked files ?
+$git stash save --include-untracked    ( untracked files are stashed too)
+
+- When we have so many stashes , it's difficult to tell them apart
+'git stash list' can take any option as 'git log'. For ex:
+$git stash list --statstat
+
+- For specific stash :
+$git stash show stash@{2}
+
+- 'git stash show' can take any option as 'git log'. For ex:
+$git stash show --patch   ( show file diff)
+
+- stash with a message
+$git stash save "Add something new"
+
+- Create a branch, pop a stash into that branch
+$git stash branch new_branch stash@{0}
+
+
+** Purging history
+- Back up the entire repo
+$git clone petshop petshop-filter
+$cd petshop-filter
+
+$git filter-branch --tree-filter <command>
+(git will check each commit out into working directory, run your command and recommit )
+( we want to delete some file)
+$git filter-branch --tree-filter 'rm -f password.txt'   ( remove password.txt from project root)
+
+$git filter-branch --tree-filter 'find . name "*.mp4" -exec rm {} \;'  (remove any .mp4 in any directory)
+
+$git filter-branch --tree-filter 'rm -f password.txt' -- --all  ( run all commits, in all branches)
+
+$git filter-branch --tree-filter 'rm password.txt'  (without -f, will fail if file is not present)
+
+- Index filter
+$git filter-branch --index-filter <command>
+(command must operate on staging area)
+(git will run command on each commit, without checking out first so it's faster )
+$git filter-branch --index-filter 'rm -f passwords.txt'  (operate on working directory, hence it won't work)
+
+$git filter-branch --index-filter 'git rm --cached --ignore-unmatch password.txt' ( this will operate on staging area)
+
+- "--prune-empty" option drops commits that don't alter any files
+$git filter-branch -f --prune-empty -- --all
+
+
+** Working together
+- Line endings
+- In OSX/linux : new line = line feed ( /n )
+- In Windows : new line = carriage return followed by a line feed ( /r/n)
+On Unix like system, run
+$git config --global core.autocrlf input     (changes CR/LF to LF on commit)
+( fixes any Windows line endings that get introduced)
+
+On Windows systems
+$git config --global core.autocrlf true    ( changes LF to CR/LF on checkout, but converts back to LF on commit)
+
+On Windows only projects ( everyone is using Windows)
+$git config core.autocrlf false   ( does no conversion)
+
+- Create a .gitattributes file so no need to config on each machine
+
+- cherry-pick a commit from other branch to this current branch
+$git checkout current-branch
+$git cherry-pick 5345b2a
+$git log --oneline     (just to check)
+
+- cherry-pick and edit the commit message
+$git cherry-pick --edit 2542b23a
+
+- cherry-pick some commits and combine into 1 commit
+$git cherry-pick --no-commit 324b12a 44ba32   (--no-comit pull in changes and stages them but does not commit)
+$git commit -m "pick 2 commits"
+
+- cherry-pick and add SHA of where it came from
+$git cherry-pick -x 354b43a
+
+- cherry-pick and add author to commit message
+$git cherry-pick --signoff 543b13a
+
+
+** Submodules : some common codes that you can use across different projects.
+- To add a submodule
+$git submodule add git@example.com:css.git
+$git status
+$git commit -m "add CSS submodule"
+$git push
+
+- All submodules are created and listed in .gitmodules file
+- $cd css , checkout master, do changes, commit, push to remote of submodule repo
+- In addition, you also need to commit to parent repo
+$cd ..    ( to parent directory)
+$git status
+$git add css
+$git commit -m "Update css"
+$git push
+
+- If someone clone the parent project which has submodules, the submodule folders will be empty
+- We need to initialize our submodule
+$git submodule init   ( in parent dir)
+(This will go through your .gitmodules file and automatically add an entry to config for each submodule)
+( check .git/config)
+(then run submodule update)
+$git submodule update
+( this will clone from remote to our local)
+
+- If somebody else do some changes to submodule, you will notice in parent repo
+$git status
+- To update the changes
+$git submodule update
+$git status   will show 'nothing to commit'
+
+Jane made some changes to example.css file
+- Every time we run 'git submodule update', git pull but not pointing to any branch
+- So
+$cd css
+$git status
+# Not currently on any branch    <-----
+$git add example.css
+$git commit -m "update css"
+- And therefore commit and push will not make any changes
+$git push     ( nothing is sent)
+$git branch
+* (no branch)
+  master
+- What we need to do
+$git checkout master
+$git merge b3443a4   ( Jane meant for this commit to go on the 'master' branch)
+(now Jane can push)
+$git log --oneline
+$git push   ( now it is sent to submodule repo)
+- Still we need to commit in parent of submodule
+$cd ..
+$git status
+$git add css
+$git commit -m "update submodule"
+$git push
+
+- For Jane
+step 1      /submodule      $git push
+step 2      /               $git push
+( if Jane forgot to push the submodule in step 1 and only push in step 2 ?)
+(then when Gregg does 'git submodule update', Gregg will see this)
+fatal : reference is not a tree: b6bb87f
+Unable to checkout 'b6bb87f...' in submodule path 'css'
+( so collaboration stuck until Jane goes to submodule and push the changes)
+
+- If you dont want to worry about forgetting, run this in parent directory :
+$git push --recurse-submodules=check     ( will abort a push if u haven't pushed a submodule)
+- OR
+$git push --recurse-submodules=on-demand   ( push all repos even submodules)
+- OR config it
+$git config alias.pushall "push --recurse-submodules=on-demand "
+$git pushall
+
+** Reflog
+- if we accidentally reset or delete a commit, git log will not show, instead, use reflog
+$git reflog
+43c13e7 HEAD@{0}: reset: moving to 43c1
+1e62107 HEAD@{1}: commit: Add third section
+43c13e7 HEAD@{2}: commit: Add second section
+2bd404a HEAD@{3}: commit (initial): Add first section
+$git reset --hard 1e62  OR  $git reset --hard HEAD@{1}
+(NOTE: reflog is only LOCAL)
+
+- If we accidentally delete a branch, how to get it back ?
+$git branch -D aviary
+( if we can find the latest commit and re-create the branch that points to it,
+it will be like the branch was never deleted)
+$git log --walk-reflogs
+$git branch aviary_new 280e ( create a new branch with the SHA of the last commit of the deleted branch)
+or $git branch aviary_new HEAD@{1}    ( the deleted branch is resurrected)
+$git checkout aviary_new
+$git log --oneline
