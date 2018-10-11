@@ -1,0 +1,333 @@
+##### 4.17 SETS
+- Arrays allow duplicate values
+- Sets store unique values, both primitive and objects
+- Sets are iterable, use for...of
+
+```` javascript
+let tags = new Sets();
+tags.add("One");
+tags.add({version: "3.2"});
+tags.add("Web");
+tags.add("Web");
+tags.add("Web");
+
+console.log(tags.size);  // 3
+
+for( let tag of tags ){
+	console.log( tag );
+}
+
+let [a,b,c] = tags;
+console.log( a, b , c );
+
+````
+
+###### WeakSets
+- WeakSets allows only objects to be stored
+- WeakSets cannot be used with for...of and we cannot read the value from it
+
+```javascript
+let weakTags = new WeakSet();
+
+weakTags.add("Something here");    // error
+let iOS = { name : "iOS"};
+weakTags.add(iOS);
+
+weakTags.has(iOS);   // true
+weakTags.delete(iOS);  // true
+
+````
+
+- Using WeakSet to avoid mutating objects. For example:
+- postArray (array) and readPost(WeakSet)
+- If a post is read, readPost.add(post)
+- for ( post of postArray) {
+	if( readPost.has(post){
+		// add css class to post, for ex
+		_addReadPostClass( post.element);
+	}
+}
+
+
+#### 5.1 CLASSES
+- Using function as Objects are kind the same, but using class we can use inheritance to reduce code repetition
+- constructor is the function that runs everytime the object is instantiated
+- Child classes can invoke  methods from their **parent** classes via the **super** object  ( super.parse(something);  )
+
+```javascript
+	// Prototype Object Model
+	function SponsorWidget(name, description, url){
+		//...
+	}
+	SponsorWidget.prototype.render = function(){}
+
+	let sponsorWidget = new SponsorWidget(a, b, c);
+	sponsorWidget.render();
+
+
+	// Syntactic Sugar
+	class SponsorWidget {
+		// ...
+		render(){}
+	}
+	let sponsorWidget = new SponsorWidget(a, b, c);  // created the same way
+	sponsorWidget.render();
+```
+
+
+```javascript
+// Inheritance example
+class Widget {
+	constructor() {
+		this.baseCSS = "site-widget";
+	}
+
+	parse(value) {
+		//...
+	}
+}
+
+class SponsorWidget extends Widget{
+	constructor(name, description, url){
+		super();   // runs parents constructor function
+
+		//...
+	}
+
+	parse(){
+		let parsedName = super.parse(this.name);  // Call parent version of parse()
+		return something;
+	}
+
+	render(){
+		let parsedName = this.parse(this.name);  // this.parse=inherited methods
+		let css = this._buildCSS(this.baseCSS);  // this.baseCSS=inherited properties
+		//...
+	}
+}
+````
+
+##### 5.2 Modules
+
+###### Module Part I
+````javascript
+
+	// flash-message.js
+	export default function(message){
+		alert(message);
+	}
+
+  // Name export
+	export function logMessage(message){
+		console.log(message);
+	}
+
+	// OR
+	export { alertMessage1, alertMessage2}
+
+	//app.js
+	import flashAnything from "./flash-message" ; // because export DEFAULT, we can name anything
+	import  {logMessage} from "./flash-message" ; // Must be same name "logMessage"
+	import  * as flash  from "./flash-message" ;
+
+	// calling the function
+	flashAnything("hello") ;
+
+	logMessage("there");
+
+	flash.logMessage("There you go");
+
+````
+
+###### Module Part II
+
+Exporting Constants
+
+````javascript
+
+	// constants.js
+	export const MAX_USERS = 3;
+	export const MAX_REPLIES = 4;
+
+	// OR
+	const MIN_USERS = 1;
+	const MIN_REP = 2;
+	export {MIN_USERS, MIN_REP};
+
+
+	// load-profiles.js
+	import {MAX_USERS, MAX_REPLIES} from "./constants";
+
+	function loadProfile(userName){
+		if(userNames.length > MAX_USERS){
+			// ...
+		}
+	}
+
+````
+
+
+Exporting Class Module
+
+````javascript
+
+	// flash-message.js
+
+	export default class FlashMessage {
+		constructor(mess){
+			this.message = mess;
+		}
+
+		renderAlert(){
+			//...
+		}
+
+		renderlog(){
+			//...
+		}
+
+	}
+
+	// OR
+	class Hello {
+		constructor(){
+
+		}
+	}
+	export { Hello };
+
+	// app.js
+
+	import FlashAnyName from "./flash-message";
+	import { Hello } from "./flash-message";
+
+	let flash = new FlashAnyName("Hi");
+	flash.renderlog();
+
+
+
+````
+
+##### 6. Promises, Iterator, Generators
+
+###### 6.1 Promises
+
+````javascript
+new Promise((resolve, reject) => { /* resolver */ })
+
+// example
+
+export default function getReplies(topicId){
+  return new Promise(function( resolve, reject ){
+    _getRepliesForTopic(topicId, function(data){
+      let replies = data.replies;
+      if(replies){
+        resolve(replies);
+      }else{
+        let error = new Error("An error occurred");
+        reject(error);
+      }
+    });
+  });
+}
+
+getReplies(1)
+.then(function(replies){
+  return replies.filter( reply => !reply.isAbuse );
+})
+.then(function(filteredReplies){
+  console.log( filteredReplies );
+})
+.catch(function(error){
+  console.log(error);
+}) ;
+
+````
+
+###### 6.5 Iterator
+
+```javascript
+	let names = ["Sam", "Tyler", "Brook"];
+	for(let name of names){
+		console.log(name);
+	}
+
+	// the above code is equivalent to the below
+	let iterator = names[Symbol.iterator]();
+
+	let firstRun = iterator.next();  // next() return {done: false, value: "Sam"}
+	let name = firstRun.value
+
+	let secondRun = iterator.next();  // return {done: false, value: "Tyler"}
+	let name = secondRun.value
+
+	let thirdRun = iterator.next();  // return {done: false, value: "Brook"}
+	let name = thirdRun.value
+
+	let fourthRun = iterator.next()  // return {done: true, value: undefined }
+```
+
+We can write our own Iterator for Objects
+
+```javascript
+
+	let post = {  };
+
+	post[Symbol.iterator] = function (){
+		let properties = Object.keys(this);
+		let count = 0;
+		let isDone = false;
+
+		let next = () => {
+			if(count >= properties.length ){
+				isDone = true;
+			}
+			return {done: isDone, value: this[properties[count++]] };
+		}
+		return { next } ;
+	}
+
+```
+
+###### 6.10 Generators
+
+````javascript
+	// same as function* topicList()  or function * topicList()
+	function *topicList(){  
+	  yield "ES2015";
+	  yield "Semi-colons: good or bad?";
+	  yield "TypeScript";
+	}
+
+	for( let topic of topicList() ){
+	  console.log( topic );
+	}
+
+	// OR
+	let names = [...topicList()];
+	let [first, ...rest] = topicList();
+
+````
+
+Better written
+
+````javascript
+	let user = {
+		name: "sam", totalReplies: 17, isBlocked: false
+	};
+
+	user[Symbol.iterator] = function * (){
+
+		let properties = Object.keys(this);
+		let count = 0;
+		let isDone = false;
+
+		for(let p of properties){
+			yield this[p];
+		}
+	};
+
+	for(let p of user){
+		console.log( p );
+	}
+````
