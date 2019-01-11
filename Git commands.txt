@@ -556,3 +556,8 @@ $git branch aviary_new 280e ( create a new branch with the SHA of the last commi
 or $git branch aviary_new HEAD@{1}    ( the deleted branch is resurrected)
 $git checkout aviary_new
 $git log --oneline
+
+
+
+# Revert to staging :
+$git checkout -- file_name.js
